@@ -1,0 +1,214 @@
+var onRun = function (context) {
+
+	var app = [NSApplication sharedApplication]
+	var command = context.command
+	var doc = context.document
+	var page = doc.currentPage()
+
+	// Setup spacing to be able to save and retreive previously used values
+
+	var DEFAULT_PADDING_TOP = 10
+	var DEFAULT_PADDING_RIGHT = 10
+	var DEFAULT_PADDING_BOTTOM = 10
+	var DEFAULT_PADDING_LEFT = 10
+
+	var saved_padding_top = null
+	var saved_padding_right = null
+	var saved_padding_bottom = null
+	var saved_padding_left = null
+
+	try {
+
+	    saved_padding_top = [command valueForKey:"testPaddingTop" onLayer:page]
+	    saved_padding_right = [command valueForKey:"testPaddingRight" onLayer:page]
+	    saved_padding_bottom = [command valueForKey:"testPaddingBottom" onLayer:page]
+	    saved_padding_left = [command valueForKey:"testPaddingLeft" onLayer:page]
+
+	}
+	catch (err) {
+
+	    log("Failed fetching values")
+
+	}
+
+	if (saved_padding_top == null) {
+
+		var saved_padding_top = DEFAULT_PADDING_TOP
+	}
+	if (saved_padding_right == null) {
+
+		var saved_padding_right = DEFAULT_PADDING_RIGHT
+	}
+	if (saved_padding_bottom == null) {
+
+		var saved_padding_bottom = DEFAULT_PADDING_BOTTOM
+	}
+	if (saved_padding_left == null) {
+
+		var saved_padding_left = DEFAULT_PADDING_LEFT
+	}
+
+
+	var selectedLayers = context.selection
+	var selectedCount = selectedLayers.count()
+
+	var topIsSet = true
+	var rightIsSet = true
+	var bottomIsSet = true
+	var leftIsSet = true
+
+	function getValues() {
+
+		// Create the accessory view for user input
+
+		var accessory = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 190, 140)]
+		accessory.setTitle("")
+
+		var top = [[NSTextField alloc] initWithFrame:NSMakeRect(70, 90, 40, 20)]
+		top.setIntValue(saved_padding_top)
+		accessory.addSubview(top)
+
+		var right = [[NSTextField alloc] initWithFrame:NSMakeRect(130, 50, 40, 20)]
+		right.setIntValue(saved_padding_right)
+		accessory.addSubview(right)
+
+		var bottom = [[NSTextField alloc] initWithFrame:NSMakeRect(70, 5, 40, 20)]
+		bottom.setIntValue(saved_padding_bottom)
+		accessory.addSubview(bottom)
+
+		var left = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 50, 40, 20)]
+		left.setIntValue(saved_padding_left)
+		accessory.addSubview(left)
+
+		// Draw and populate the NSAlert view
+
+		var alert = NSAlert.alloc().init()
+		alert.setMessageText("Adjust Button Shape")
+		alert.setInformativeText("Set the values for padding the shape layer according to your text layer")
+		alert.addButtonWithTitle('OK')
+		alert.addButtonWithTitle('Cancel')
+		alert.setAccessoryView(accessory)
+
+		// Return value set to the choice made by the user
+
+		var responseCode = alert.runModal()
+
+		// Adjust if the user has left an input blank to save the alreday set relative position
+
+		if([[top stringValue] length] == 0) {
+			topIsSet = false
+		}
+		if([[right stringValue] length] == 0) {
+			rightIsSet = false
+		}
+		if([[bottom stringValue] length] == 0) {
+			bottomIsSet = false
+		}
+		if([[left stringValue] length] == 0) {
+			leftIsSet = false
+		}
+
+
+		return [responseCode, [top intValue], [right intValue], [bottom intValue], [left intValue]]
+	}
+
+	// Get text layer and rectangle
+
+	if(selectedCount == 0) {
+
+		[app displayDialog:"Select one text layer and one shape layer" withTitle:"I'm sorry Dave, I'm afraid I can't do that"]
+
+	} else {
+
+		// Initialize the alert view and retreive the return values after confirmation
+
+		var values = getValues()
+
+		var responseCode = values[0]
+		var top = values[1]
+		var right = values[2]
+		var bottom = values[3]
+		var left = values[4]
+
+		var text
+		var rect
+
+		// Get the text layer and the shape layer from the selection
+
+		for(var i = 0; i < selectedCount; i++) {
+
+			var layer = selectedLayers[i]
+
+			if(layer.isKindOfClass([MSShapeGroup class])) {
+				
+				rect = [layer frame]
+
+			} else if (layer.isKindOfClass([MSTextLayer class])) {
+				
+				text = [layer frame]
+
+			}
+		}
+
+		// If the user did confirm with "OK"
+
+		if(responseCode == 1000) {
+
+			try {
+
+				// Retreive the current values of the layers
+
+				var textX = [text x],
+					textY = [text y],
+					textWidth = [text width],
+					textHeight = [text height]
+
+				var rectX = [rect x],
+					rectY = [rect y],
+					rectWidth = [rect width],
+					rectHeight = [rect height]
+
+				// Check if any of the values are to be ignored and adjust values
+
+				if(!topIsSet) {
+					top = textY - rectY
+				}
+				if(!rightIsSet) {
+					right = (rectX + rectWidth) - (textX + textWidth)
+				}
+				if(!bottomIsSet) {
+					bottom = (rectY + rectHeight) - (textY + textHeight)
+				}
+				if(!leftIsSet) {
+					left = textX - rectX
+				}
+
+				// Redraw selection according to set user value
+
+				rect.width = textWidth + left + right
+				text.x = rectX + left
+				
+				rect.height = textHeight + top + bottom
+				text.y = rectY + top
+
+			} catch (err) {
+
+				[app displayDialog:"This operation can only be performed with one text layer and one shape layer selected" withTitle:"Something went wrong"]
+
+			}
+
+			try {
+
+				[command setValue:top forKey:"testPaddingTop" onLayer:page]
+				[command setValue:right forKey:"testPaddingRight" onLayer:page]
+				[command setValue:bottom forKey:"testPaddingBottom" onLayer:page]
+				[command setValue:left forKey:"testPaddingLeft" onLayer:page]
+
+			} catch (err) {
+
+				log("Failed saving values")
+
+		    }
+		}
+	}
+}

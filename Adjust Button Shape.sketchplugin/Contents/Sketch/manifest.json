@@ -1,0 +1,25 @@
+{
+  "name": "Adjust Button Shape",
+  "description": "Adjust a shape layer according to the attributes of a text layer",
+  "author": "Petter Silfver",
+  "homepage": "https://github.com/psilfver/sketch-adjust-button-shape",
+  "version": 1.0,
+  "identifier": "com.psilfver.sketch.adjust-button-shape",
+  "updateURL": "",
+  "compatibleVersion": 3.7,
+  "bundleVersion": 1,
+  "commands": [
+    {
+      "name": "Adjust Button Shape",
+      "identifier": "adjust",
+      "shortcut": "shift cmd ctrl b",
+      "script": "Adjust Button Shape.cocoascript"
+    }
+  ],
+  "menu": {
+    "isRoot": true,
+    "items": [
+      "adjust"
+    ]
+  }
+}
