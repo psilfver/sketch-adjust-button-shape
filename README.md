@@ -1,6 +1,6 @@
 # sketch-adjust-button-shape
 
-A Sketch plugin that adjusts a shape layer according to the attributes of a text layer
+ A Sketch plugin that adjusts the size of a shape layer according to the width and height of a text layer, plus values that you can input for padding.
 
 ![Adjust Button Shape](https://dl.dropboxusercontent.com/u/3943672/adjust_button_shape.gif)
 
