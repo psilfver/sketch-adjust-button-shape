@@ -14,6 +14,10 @@ Select one shape layer and one text layer and run the script, either via `Plugin
 
 Insert values for the top, right, bottom or left padding of the shape. If you want an already nice looking padding to stay unaltered, leave the input field blank.
 
+## Change log
+
+1.1 Added…
+
 ## Issues, questions and suggestions
 
 File an issue or contact me on Twitter: [http://twitter.com/psilfver](@psilfver)

@@ -131,6 +131,7 @@ var onRun = function (context) {
 		var left = values[4]
 
 		var text
+		var alignment = 0
 		var rect
 
 		// Get the text layer and the shape layer from the selection
@@ -144,6 +145,8 @@ var onRun = function (context) {
 				rect = [layer frame]
 
 			} else if (layer.isKindOfClass([MSTextLayer class])) {
+
+				alignment = [layer textAlignment]
 				
 				text = [layer frame]
 
@@ -186,6 +189,23 @@ var onRun = function (context) {
 				// Redraw selection according to set user value
 
 				rect.width = textWidth + left + right
+
+				// Re-calculate rect coordinates text alignment is center or right
+
+				switch(alignment) {
+
+					case 1:
+						// Right aligned
+						rectX = rectX + (rectWidth - [rect width])
+						rect.x = rectX
+						break
+					case 2:
+						// Center aligned
+						rectX = rectX + (rectWidth - [rect width]) / 2
+						rect.x = rectX
+						break
+				}
+
 				text.x = rectX + left
 				
 				rect.height = textHeight + top + bottom
