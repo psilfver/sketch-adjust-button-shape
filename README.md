@@ -2,7 +2,13 @@
 
  A Sketch plugin that adjusts the size of a shape layer according to the width and height of a text layer, plus values that you can input for padding.
 
+ ### Select layers and add padding
+
 ![Adjust Button Shape](https://dl.dropboxusercontent.com/u/3943672/adjust_button_shape.gif)
+
+### Use text alignemnt to control re-drawing
+
+![Adjust Button Shape Alignment Sensitivity](https://dl.dropboxusercontent.com/u/3943672/adjust_button_shape_alignment.gif)
 
 ## Installation
 
@@ -16,7 +22,7 @@ Insert values for the top, right, bottom or left padding of the shape. If you wa
 
 ## Change log
 
-1.1 Added…
+2016-05-09 Added text alignment sensitivity when re-drawing the position of the shape layer
 
 ## Issues, questions and suggestions
 
